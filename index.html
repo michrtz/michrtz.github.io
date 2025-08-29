@@ -1,217 +1,242 @@
-<!DOCTYPE HTML>
-<!--
-	Landed by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Landed by HTML5 UP</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload landing">
-		<div id="page-wrapper">
+import React, { useMemo, useState, useEffect } from "react";
 
-			<!-- Header -->
-				<header id="header">
-					<h1 id="logo"><a href="index.html">Landed</a></h1>
-					<nav id="nav">
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li>
-								<a href="#">Layouts</a>
-								<ul>
-									<li><a href="left-sidebar.html">Left Sidebar</a></li>
-									<li><a href="right-sidebar.html">Right Sidebar</a></li>
-									<li><a href="no-sidebar.html">No Sidebar</a></li>
-									<li>
-										<a href="#">Submenu</a>
-										<ul>
-											<li><a href="#">Option 1</a></li>
-											<li><a href="#">Option 2</a></li>
-											<li><a href="#">Option 3</a></li>
-											<li><a href="#">Option 4</a></li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-							<li><a href="elements.html">Elements</a></li>
-							<li><a href="#" class="button primary">Sign Up</a></li>
-						</ul>
-					</nav>
-				</header>
+// Dark-style, two-page microsite inspired by the screenshots the user shared.
+// Tech: Single-file React + Tailwind (no imports needed in this environment).
+// Pages: Home & Product (2 pages total). Buttons on the right jump between them.
 
-			<!-- Banner -->
-				<section id="banner">
-					<div class="content">
-						<header>
-							<h2>The future has landed</h2>
-							<p>And there are no hoverboards or flying cars.<br />
-							Just apps. Lots of mother flipping apps.</p>
-						</header>
-						<span class="image"><img src="images/pic01.jpg" alt="" /></span>
-					</div>
-					<a href="#one" class="goto-next scrolly">Next</a>
-				</section>
+const Dots = () => {
+  // sprinkle a few subtle dot clusters to mimic the vibe
+  const dots = useMemo(() => {
+    const clusters = [];
+    const makeCluster = (x, y, count = 6) => {
+      const items = [];
+      for (let i = 0; i < count; i++) {
+        const dx = (Math.random() - 0.5) * 40;
+        const dy = (Math.random() - 0.5) * 40;
+        items.push({ x: x + dx, y: y + dy, s: Math.random() * 2 + 1 });
+      }
+      return items;
+    };
+    clusters.push(...makeCluster(120, 40));
+    clusters.push(...makeCluster(340, 28));
+    clusters.push(...makeCluster(520, 70));
+    clusters.push(...makeCluster(900, 105));
+    clusters.push(...makeCluster(1100, 70));
+    clusters.push(...makeCluster(1300, 120));
+    clusters.push(...makeCluster(780, 260));
+    clusters.push(...makeCluster(1240, 300));
+    return clusters;
+  }, []);
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden>
+      {dots.map((d, i) => (
+        <span
+          key={i}
+          style={{ left: d.x, top: d.y, width: d.s, height: d.s }}
+          className="absolute rounded-sm bg-white/50 opacity-50"
+        />
+      ))}
+    </div>
+  );
+};
 
-			<!-- One -->
-				<section id="one" class="spotlight style1 bottom">
-					<span class="image fit main"><img src="images/pic02.jpg" alt="" /></span>
-					<div class="content">
-						<div class="container">
-							<div class="row">
-								<div class="col-4 col-12-medium">
-									<header>
-										<h2>Odio faucibus ipsum integer consequat</h2>
-										<p>Nascetur eu nibh vestibulum amet gravida nascetur praesent</p>
-									</header>
-								</div>
-								<div class="col-4 col-12-medium">
-									<p>Feugiat accumsan lorem eu ac lorem amet sed accumsan donec.
-									Blandit orci porttitor semper. Arcu phasellus tortor enim mi
-									nisi praesent dolor adipiscing. Integer mi sed nascetur cep aliquet
-									augue varius tempus lobortis porttitor accumsan consequat
-									adipiscing lorem dolor.</p>
-								</div>
-								<div class="col-4 col-12-medium">
-									<p>Morbi enim nascetur et placerat lorem sed iaculis neque ante
-									adipiscing adipiscing metus massa. Blandit orci porttitor semper.
-									Arcu phasellus tortor enim mi mi nisi praesent adipiscing. Integer
-									mi sed nascetur cep aliquet augue varius tempus. Feugiat lorem
-									ipsum dolor nullam.</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<a href="#two" class="goto-next scrolly">Next</a>
-				</section>
+const GridBackground = () => (
+  <div className="absolute inset-0 overflow-hidden">
+    {/* Grid pattern */}
+    <div
+      className="absolute inset-0 opacity-[0.15]"
+      style={{
+        backgroundImage:
+          "radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1px)",
+        backgroundSize: "22px 22px",
+        backgroundPosition: "0 0",
+      }}
+    />
+    {/* Horizon gradient */}
+    <div
+      className="absolute inset-0"
+      style={{
+        background:
+          "linear-gradient(to bottom, #050505 0%, #0b0b0b 22%, #121212 34%, rgba(255,255,255,0.85) 55%, rgba(220,220,220,0.55) 70%, #0f0f10 100%)",
+      }}
+    />
+    {/* Faint mountains silhouette */}
+    <div
+      className="absolute bottom-0 left-0 right-0 h-[40%] opacity-30"
+      style={{
+        backgroundImage:
+          "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2)), url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"none\" viewBox=\"0 0 1600 400\"><path fill=\"%23000000\" d=\"M0 320l80-27c80-26 240-80 400-53s320 133 480 117 320-149 400-192l240-133v368H0z\"/></svg>')",
+        backgroundSize: "cover",
+        backgroundPosition: "bottom",
+        mixBlendMode: "screen",
+      }}
+    />
+    <Dots />
+  </div>
+);
 
-			<!-- Two -->
-				<section id="two" class="spotlight style2 right">
-					<span class="image fit main"><img src="images/pic03.jpg" alt="" /></span>
-					<div class="content">
-						<header>
-							<h2>Interdum amet non magna accumsan</h2>
-							<p>Nunc commodo accumsan eget id nisi eu col volutpat magna</p>
-						</header>
-						<p>Feugiat accumsan lorem eu ac lorem amet ac arcu phasellus tortor enim mi mi nisi praesent adipiscing. Integer mi sed nascetur cep aliquet augue varius tempus lobortis porttitor lorem et accumsan consequat adipiscing lorem.</p>
-						<ul class="actions">
-							<li><a href="#" class="button">Learn More</a></li>
-						</ul>
-					</div>
-					<a href="#three" class="goto-next scrolly">Next</a>
-				</section>
+const Logo = () => (
+  <div className="select-none flex items-end gap-3 text-white">
+    <h1 className="text-[72px] sm:text-[92px] leading-none font-semibold tracking-tight">Dark</h1>
+    <div className="pb-4">
+      <div className="uppercase tracking-[0.35em] text-xs font-semibold">Useful</div>
+      <div className="uppercase tracking-[0.35em] text-xs font-semibold -mt-1">Agents</div>
+    </div>
+  </div>
+);
 
-			<!-- Three -->
-				<section id="three" class="spotlight style3 left">
-					<span class="image fit main bottom"><img src="images/pic04.jpg" alt="" /></span>
-					<div class="content">
-						<header>
-							<h2>Interdum felis blandit praesent sed augue</h2>
-							<p>Accumsan integer ultricies aliquam vel massa sapien phasellus</p>
-						</header>
-						<p>Feugiat accumsan lorem eu ac lorem amet ac arcu phasellus tortor enim mi mi nisi praesent adipiscing. Integer mi sed nascetur cep aliquet augue varius tempus lobortis porttitor lorem et accumsan consequat adipiscing lorem.</p>
-						<ul class="actions">
-							<li><a href="#" class="button">Learn More</a></li>
-						</ul>
-					</div>
-					<a href="#four" class="goto-next scrolly">Next</a>
-				</section>
+const RightButtons = ({ onGoHome, onGoProduct }) => (
+  <div className="flex flex-col gap-3">
+    <button
+      onClick={onGoProduct}
+      className="w-44 rounded-xl border border-white/40 bg-black/30 text-white backdrop-blur px-5 py-3 text-sm tracking-widest uppercase hover:bg-white/10 transition"
+    >
+      Product
+    </button>
+    <button
+      onClick={onGoHome}
+      className="w-44 rounded-xl border border-white/10 bg-white/5 text-white/70 backdrop-blur px-5 py-3 text-sm tracking-widest uppercase hover:bg-white/10 transition"
+    >
+      Home
+    </button>
+  </div>
+);
 
-			<!-- Four -->
-				<section id="four" class="wrapper style1 special fade-up">
-					<div class="container">
-						<header class="major">
-							<h2>Accumsan sed tempus adipiscing blandit</h2>
-							<p>Iaculis ac volutpat vis non enim gravida nisi faucibus posuere arcu consequat</p>
-						</header>
-						<div class="box alt">
-							<div class="row gtr-uniform">
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-chart-area"></span>
-									<h3>Ipsum sed commodo</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-comment"></span>
-									<h3>Eleifend lorem ornare</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-flask"></span>
-									<h3>Cubilia cep lobortis</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-paper-plane"></span>
-									<h3>Non semper interdum</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-file"></span>
-									<h3>Odio laoreet accumsan</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="col-4 col-6-medium col-12-xsmall">
-									<span class="icon solid alt major fa-lock"></span>
-									<h3>Massa arcu accumsan</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-							</div>
-						</div>
-						<footer class="major">
-							<ul class="actions special">
-								<li><a href="#" class="button">Magna sed feugiat</a></li>
-							</ul>
-						</footer>
-					</div>
-				</section>
+const GlassCard = ({ children }) => (
+  <div className="max-w-xl rounded-2xl bg-white/10 backdrop-blur border border-white/20 p-6 text-white/90 shadow-[0_8px_40px_rgba(0,0,0,0.35)]">
+    {children}
+  </div>
+);
 
-			<!-- Five -->
-				<section id="five" class="wrapper style2 special fade">
-					<div class="container">
-						<header>
-							<h2>Magna faucibus lorem diam</h2>
-							<p>Ante metus praesent faucibus ante integer id accumsan eleifend</p>
-						</header>
-						<form method="post" action="#" class="cta">
-							<div class="row gtr-uniform gtr-50">
-								<div class="col-8 col-12-xsmall"><input type="email" name="email" id="email" placeholder="Your Email Address" /></div>
-								<div class="col-4 col-12-xsmall"><input type="submit" value="Get Started" class="fit primary" /></div>
-							</div>
-						</form>
-					</div>
-				</section>
+const Home = ({ goProduct }) => (
+  <div className="relative min-h-screen">
+    <GridBackground />
+    <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-16">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
+        <GlassCard>
+          <h2 className="text-2xl font-semibold mb-3">Specialized agents that solve real problems.</h2>
+          <p className="text-sm/6 mb-3">
+            In today\'s AI landscape, the greatest opportunity lies in workflow automation — creating specialized agents that solve
+            specific, meaningful problems for users.
+          </p>
+          <p className="text-sm/6 mb-3">
+            We\'re bottoms‑up: identify real pain points, then leverage AI to streamline what used to be impossible. Instead of
+            asking <em>what might AI do?</em>, we ask <em>what are people already trying to do that AI can make dramatically easier?</em>
+          </p>
+          <p className="text-sm/6">
+            Our first product is <span className="font-semibold">Scout</span>, a realtime information agent for web3 that delivers timely, proactive insights in fast‑moving environments.
+          </p>
+        </GlassCard>
+        <div className="flex flex-col items-center gap-8">
+          <Logo />
+          <RightButtons onGoProduct={goProduct} onGoHome={() => {}} />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-			<!-- Footer -->
-				<footer id="footer">
-					<ul class="icons">
-						<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
-						<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
-						<li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
-						<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-						<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
-						<li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
-					</ul>
-					<ul class="copyright">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
-				</footer>
+const Feature = ({ title, desc }) => (
+  <div className="rounded-2xl border border-white/15 bg-white/5 p-6 text-white/90">
+    <div className="text-base font-semibold mb-2">{title}</div>
+    <div className="text-sm/6 opacity-90">{desc}</div>
+  </div>
+);
 
-		</div>
+const Product = ({ goHome }) => (
+  <div className="relative min-h-screen">
+    <GridBackground />
+    <div className="relative z-10 mx-auto max-w-6xl px-6 pt-16 pb-24">
+      <div className="flex items-center justify-between mb-10">
+        <div className="text-white/90">
+          <div className="uppercase tracking-[0.35em] text-xs">Product</div>
+          <h2 className="text-3xl font-semibold mt-2">Scout — realtime information agent</h2>
+        </div>
+        <button
+          onClick={goHome}
+          className="rounded-xl border border-white/30 bg-black/30 text-white backdrop-blur px-4 py-2 text-xs tracking-widest uppercase hover:bg-white/10 transition"
+        >
+          ◀ Home
+        </button>
+      </div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.dropotron.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+      <div className="grid md:grid-cols-3 gap-5">
+        <Feature
+          title="Smart Feed"
+          desc="Curated, ranked signals that surface what matters right now across on‑chain and social, reducing noise and boosting reaction speed."
+        />
+        <Feature
+          title="Technical Panel"
+          desc="Tactical indicators, market structure, and liquidity cues so power users can make faster entries and exits."
+        />
+        <Feature
+          title="Wallet & Flow Intel"
+          desc="Follow top holders, track concentration risk, and monitor flow dynamics across chains and venues in real time."
+        />
+        <Feature
+          title="Sentiment & Narrative"
+          desc="Understand how narratives evolve. Detect pivots early using language + network‑graph signals."
+        />
+        <Feature
+          title="Proactive Alerts"
+          desc="Agent‑driven alerts that trigger on your conditions — not just price — so you act at the right moment."
+        />
+        <Feature
+          title="API & Embeds"
+          desc="Bring the agent into your stack via simple APIs and widgets. White‑label options for desks and communities."
+        />
+      </div>
 
-	</body>
-</html>
+      <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <GlassCard>
+          <div className="text-lg font-semibold mb-2 text-white">Early Access</div>
+          <p className="text-sm/6 text-white/90">
+            Scout is currently in limited early access. Request access and we\'ll reach out as capacity opens up.
+          </p>
+        </GlassCard>
+        <button className="rounded-2xl border border-white/40 bg-white/10 text-white px-6 py-3 tracking-wide hover:bg-white/20 transition">
+          Request Access
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+export default function App() {
+  const [page, setPage] = useState("home"); // 'home' | 'product'
+
+  // support hash navigation (#product / #home) so it still feels like 2 pages
+  useEffect(() => {
+    const applyFromHash = () => {
+      if (window.location.hash === "#product") setPage("product");
+      else setPage("home");
+    };
+    applyFromHash();
+    window.addEventListener("hashchange", applyFromHash);
+    return () => window.removeEventListener("hashchange", applyFromHash);
+  }, []);
+
+  const goHome = () => {
+    setPage("home");
+    window.location.hash = "#home";
+  };
+  const goProduct = () => {
+    setPage("product");
+    window.location.hash = "#product";
+  };
+
+  return (
+    <div className="min-h-screen bg-black selection:bg-white/20 selection:text-white">
+      {page === "home" ? (
+        <Home goProduct={goProduct} />
+      ) : (
+        <Product goHome={goHome} />
+      )}
+
+      {/* tiny footer */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 text-[11px] text-white/50">
+        © {new Date().getFullYear()} Dark‑style demo • 2 pages (Home, Product)
+      </div>
+    </div>
+  );
+}
