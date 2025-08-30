@@ -59,11 +59,8 @@
 <section id="testimonials" class="py-6">
   <div class="max-w-5xl mx-auto px-0">
     <h2 class="text-center text-3xl font-semibold tracking-wide">Testimonials</h2>
-    <p class="text-center text-white/80 max-w-2xl mx-auto mt-3">
-      Don’t just take our word for it. The world is already catching on to Mich.
-    </p>
 
-    <div class="relative mt-10">
+    <div class="relative mt-4">
       <!-- Prev -->
       <button id="t-prev" class="absolute -left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-2xl"
               aria-label="Previous testimonial">&lt;</button>
@@ -76,10 +73,13 @@
                class="w-20 h-20 rounded-full ring-2 ring-white/20 object-cover" />
         </div>
 
-        <blockquote id="t-quote" class="mt-6 text-lg leading-relaxed"></blockquote>
+        <blockquote id="t-quote" class="mt-6 text-lg leading-relaxed text-white"></blockquote>
+
+        <!-- Tambahan logo + link -->
+        <div id="t-xlink" class="mt-4 flex justify-center items-center gap-2"></div>
 
         <div class="mt-6">
-          <div id="t-name" class="font-semibold"></div>
+          <div id="t-name" class="font-semibold text-white"></div>
           <div id="t-loc" class="text-white/60 text-sm"></div>
         </div>
       </div>
@@ -97,68 +97,42 @@
 <script>
   // —— Data bisa kamu ganti sesukanya ——
   const TESTIMONIALS = [
+      {
+      avatar: "https://i.imghippo.com/files/zpoB7078Cu.jpg",
+      quote: "“mich is a king.”",
+      name: "Edgar Pavlovsky",
+      loc: "NYC",
+      xlink: "https://x.com/edgarpavlovsky/status/1948042699824914572"
+    },
     {
       avatar: "https://i.imghippo.com/files/Qpd5808Os.jpeg",
       quote: `“Makasih Bro merubah porto saya dari 10 juta menjadi 100 Miliar”`,
       name: "Geraldo, 25",
-      loc: "Bogor"
-    },
-    {
-      avatar: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=240&fit=crop",
-      quote: "“I stopped waking up to meetings and started waking up to meaning.”",
-      name: "Ava K., 24",
-      loc: "Seoul, KR"
-    },
-    {
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=240&fit=crop",
-      quote: "“No boss, no alarm, just building. $NEET made it possible.”",
-      name: "Noah T., 31",
-      loc: "Lisbon, PT"
-    },
-    {
-      avatar: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=240&fit=crop",
-      quote: "“From burnt-out employee to full-time freedom enjoyer.”",
-      name: "Kei, 28",
-      loc: "Tokyo, JP"
+      loc: "Bogor",
+      xlink: "https://www.instagram.com/geraldoflorenta/"
     }
   ];
 
-  // —— Wiring UI ——
   const els = {
     avatar: document.getElementById('t-avatar'),
     quote:  document.getElementById('t-quote'),
     name:   document.getElementById('t-name'),
     loc:    document.getElementById('t-loc'),
+    xlink:  document.getElementById('t-xlink'),
     dots:   document.getElementById('t-dots'),
     prev:   document.getElementById('t-prev'),
-    next:   document.getElementById('t-next'),
-    card:   document.querySelector('#testimonials .rounded-2xl')
+    next:   document.getElementById('t-next')
   };
 
-  let idx = 0, autoplayId = null;
+  let idx = 0;
 
   function renderDots() {
     els.dots.innerHTML = '';
     TESTIMONIALS.forEach((_, i) => {
       const b = document.createElement('button');
-      b.className = 'w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/60 transition';
-      b.setAttribute('aria-label', `Go to slide ${i+1}`);
-      b.onclick = () => go(i, true);
+      b.className = 'w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-white' : 'bg-white/30 hover:bg-white/60');
+      b.onclick = () => { idx=i; render(); };
       els.dots.appendChild(b);
-    });
-  }
-
-  function applyActiveDot() {
-    [...els.dots.children].forEach((d, i) => {
-      d.className = 'w-2.5 h-2.5 rounded-full transition ' + (i===idx ? 'bg-white' : 'bg-white/30 hover:bg-white/60');
-    });
-  }
-
-  function animateCard() {
-    els.card.style.transform = 'scale(.98)';
-    els.card.style.transition = 'transform .18s ease';
-    requestAnimationFrame(() => {
-      els.card.style.transform = 'scale(1)';
     });
   }
 
@@ -168,36 +142,20 @@
     els.quote.textContent = t.quote;
     els.name.textContent  = t.name;
     els.loc.textContent   = t.loc;
-    applyActiveDot();
-    animateCard();
+    els.xlink.innerHTML   = t.xlink ? `
+      <img src="https://abs.twimg.com/favicons/twitter.2.ico" class="w-5 h-5">
+      <a href="${t.xlink}" target="_blank" rel="noopener" class="text-sm text-blue-400 hover:underline">
+        View on X
+      </a>` : '';
+    renderDots();
   }
 
-  function go(newIdx, stopAuto=false) {
-    idx = (newIdx + TESTIMONIALS.length) % TESTIMONIALS.length;
-    render();
-    if (stopAuto) restartAutoplay();
-  }
+  els.prev.onclick = () => { idx = (idx-1+TESTIMONIALS.length)%TESTIMONIALS.length; render(); };
+  els.next.onclick = () => { idx = (idx+1)%TESTIMONIALS.length; render(); };
 
-  function restartAutoplay() {
-    clearInterval(autoplayId);
-    autoplayId = setInterval(() => go(idx+1), 6000); // ganti interval jika perlu
-  }
-
-  // Init
-  renderDots();
   render();
-  restartAutoplay();
-
-  // Controls
-  els.prev.onclick = () => go(idx - 1, true);
-  els.next.onclick = () => go(idx + 1, true);
-
-  // Keyboard access
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft')  go(idx - 1, true);
-    if (e.key === 'ArrowRight') go(idx + 1, true);
-  });
 </script>
+
   
 
 <!-- Optional: responsive height helper -->
