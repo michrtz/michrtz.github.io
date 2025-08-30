@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="https://i.imghippo.com/files/A2273ss.png"
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mich - Specialized AI Agents</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font lokal (opsional) -->
+  <link rel="stylesheet" href="./fonts/stylesheet.css" />
+
+  <style>
+    html,body{height:100%}
+    .section{min-height:50vh; display:flex}
+    .text-wordmark{font-size:72px; font-weight:600; line-height:1; letter-spacing:-.01em}
+    .text-slogan{letter-spacing:.35em; font-size:12px; font-weight:600}
+    .glass{background:rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+
+    /* Tambahan untuk background animasi */
+    .bg-stage {
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+      pointer-events: none;
+      background: #0b0b0b;
+    }
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .bg-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(255,255,255,0.22), rgba(255,255,255,0) 45%);
+      mix-blend-mode: overlay;
+      opacity: .18;
+    }
+  </style>
+</head>
+
+  <!-- Tombol Back -->
+  <a href="index.html"
+     style="position:absolute; top:18%; right:330px; transform:translateY(-50%);
+            padding:15px 30px; border-radius:10px;
+            background:rgba(255,255,255,.1); color:#fff; text-decoration:none; font-weight:600;">
+    ← Back
+  </a>
+</div>
+
+
+<body class="bg-black text-white antialiased">
+
+  <!-- Background statis (opsional, bisa dihapus kalau mau full animasi saja) -->
+  <div class="fixed inset-0 -z-20">
+    <img src="./background.svg" alt="Background" class="w-full h-full object-cover" />
+  </div>
+
+  <!-- Background animasi -->
+  <div class="bg-stage" aria-hidden="true">
+    <canvas id="grid" class="bg-layer"></canvas>
+    <canvas id="dots" class="bg-layer"></canvas>
+    <div class="bg-fade"></div>
+  </div>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="relative py-16 md:py-12 flex items-center justify-center">
+      <div class="flex items-end justify-center gap-4">
+        <h1 class="text-wordmark">MICH</h1>
+        <div class="text-slogan flex flex-col">
+          <div>USEFUL</div>
+          <div>AGENTS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <!-- ... konten kamu tetap ... -->
+  </main>
+
+  <!-- Script animasi -->
+  <script>
+  (() => {
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const grid = document.getElementById('grid');
+    const dots = document.getElementById('dots');
+    const g = grid.getContext('2d');
+    const d = dots.getContext('2d');
+
+    let W=0, H=0, running=true;
+    const cfg = { grid: { step: 32, color: 'rgba(255,255,255,0.04)' }, dots: { count: 120} };
+
+    function resize() {
+      W = grid.clientWidth;
+      H = grid.clientHeight;
+      for (const cv of [grid, dots]) {
+        cv.width = W * DPR;
+        cv.height = H * DPR;
+        cv.style.width = W + 'px';
+        cv.style.height = H + 'px';
+      }
+      drawGrid();
+    }
+
+    function drawGrid() {
+      g.clearRect(0,0,grid.width,grid.height);
+      g.save(); g.scale(DPR,DPR);
+      const step = cfg.grid.step;
+      g.strokeStyle = cfg.grid.color;
+      for (let x=0; x<W; x+=step) {
+        g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke();
+      }
+      for (let y=0; y<H; y+=step) {
+        g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke();
+      }
+      g.restore();
+    }
+
+    const particles = [];
+    function spawn() {
+      particles.length = 0;
+      for (let i=0; i<cfg.dots.count; i++) {
+        particles.push({x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*2});
+      }
+    }
+
+    function tick() {
+      if (!running) return;
+      d.clearRect(0,0,dots.width,dots.height);
+      d.save(); d.scale(DPR,DPR);
+      d.fillStyle="white";
+      for (const p of particles) {
+        d.beginPath();
+        d.arc(p.x,p.y,p.r,0,Math.PI*2);
+        d.fill();
+        p.y += 0.2; if (p.y>H) p.y=0;
+      }
+      d.restore();
+      requestAnimationFrame(tick);
+    }
+
+    resize();
+    spawn();
+    tick();
+    window.addEventListener('resize', () => { resize(); spawn(); });
+  })();
+  </script>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mich Portfolio — Donut</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  
+  <style>
+
+    
+    :root{
+      --bg:#0b0b0f; --panel:#121219; --border:rgba(255,255,255,.08); --muted:rgba(255,255,255,.6);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:Inter,system-ui,ui-sans-serif,Arial; background:var(--bg); color:#fff}
+    .wrap{max-width:1100px; margin:0 auto; padding:32px 20px}
+    .grid{display:grid; grid-template-columns:1fr; gap:24px}
+    @media(min-width:960px){ .grid{ grid-template-columns: 570px 1fr; } }
+    .card{background:var(--panel); border:1px solid var(--border); border-radius:20px;}
+    .list{padding:18px}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 14px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--border); margin-bottom:10px}
+    .left{display:flex; align-items:center; gap:12px}
+    .swatch{width:12px; height:42px; border-radius:6px}
+    .label b{font-weight:600; color:#fff}
+    .label small{display:block; color:var(--muted); font-size:12px}
+    .icons{display:flex; align-items:center; gap:8px}
+    .icon{display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid var(--border); color:#fff; text-decoration:none}
+    .icon:hover{background:rgba(255,255,255,.1)}
+    .panel{padding:18px 18px 28px}
+    .panel h2{margin:0 0 6px; font-size:22px; font-weight:800}
+    .panel p{margin:0; color:var(--muted)}
+    .chartbox{position:relative; height:420px}
+    .center{position:absolute; inset:0; display:grid; place-items:center; pointer-events:none}
+    .center .t1{font-weight:800; font-size:26px; letter-spacing:.02em}
+    .center .t2{color:var(--muted); font-size:13px}
+    .tip{margin-top:12px; text-align:center; color:rgba(255,255,255,.45); font-size:12px}
+  </style>
+  <!-- Chart.js + Datalabels plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="grid">
+      <!-- LEFT: token list -->
+      <div class="card list" id="token-list"></div>
+
+      <!-- RIGHT: donut chart -->
+      <div class="card panel">
+        <h2>Holdings Breakdown</h2>
+        <p id="total"></p>
+        <div class="chartbox">
+          <canvas id="donut"></canvas>
+          <div class="center">
+            <div style="text-align:center">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tip">Edit data di array <b>tokens</b> pada bagian &lt;script&gt; di bawah untuk mengubah bobot, warna, dan link Dexscreener/X.</div>
+  </div>
+
+<script>
+  // ===== 1) DATA (edit freely) =====
+  // Tambahkan path gambar di field "img"
+  const tokens = [
+    { symbol:"DARK",  name:"Dark Research AI", value:70, color:"#79ffe1",
+      img:"https://dd.dexscreener.com/ds-data/tokens/solana/8BtoThi2ZoXnF7QQK1Wjmh2JuBw9FjVvhnGMVZ2vpump.png?size=lg&key=78b0ed",
+      dexscreener:"https://dexscreener.com/solana/4blcvqxulia8cfkemkpxx31icoty9kbu7bwyynfcmssv",
+      twitter:"https://x.com/darkresearchai" },
+    { symbol:"NEET",  name:"Not in Employment, Education, or Training", value:15, color:"#7c3aed",
+      img:"https://dd.dexscreener.com/ds-data/tokens/solana/Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump.png?size=lg&key=18c49b",
+      dexscreener:"https://dexscreener.com/solana/5wnu5qhdprgrl37ffcd6tmmqzugqgxwafgz477rshthy",
+      twitter:"https://x.com/neet_sol" },
+    { symbol:"COLLAT", name:"Collaterize", value:15, color:"#0ea5e9",
+      img:"https://dd.dexscreener.com/ds-data/tokens/solana/C7heQqfNzdMbUFQwcHkL9FvdwsFsDRBnfwZDDyWYCLTZ.png?size=lg&key=6a12a5",
+      dexscreener:"https://dexscreener.com/solana/deawltrgaqcw7imv1jsc9nzkrkkgstfc1u7edfbrxryr",
+      twitter:"https://x.com/collaterizehq" },
+  ];
+
+  // ===== 2) Helpers =====
+  const total = tokens.reduce((s,t)=>s+t.value,0);
+  const toPct  = v => ((v/total)*100).toFixed(1) + "%";
+
+  // ===== 3) Render list (no $ — percent only, with token image) =====
+  const list = document.getElementById('token-list');
+  document.getElementById('total').textContent = `Total: 100%`;
+
+  const dexSVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden><path d="M4.2 4.2h6.6v6.6H4.2zM13.2 4.2h6.6v6.6h-6.6zM4.2 13.2h6.6v6.6H4.2zM13.2 13.2h6.6v6.6h-6.6z"/></svg>';
+  const xSVG  = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden><path d="M18.244 2H21l-6.5 7.43L22 22h-6.857l-4.8-6.185L4.6 22H2l7.06-8.07L2 2h6.943l4.507 5.89L18.244 2Zm-2.401 18h2.181L8.256 4H6.02l9.823 16Z"/></svg>';
+
+  tokens.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="left">
+        <img src="${t.img}" alt="${t.symbol}" 
+             style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
+        <span class="swatch" style="background:${t.color}"></span>
+        <div class="label">
+          <b>${t.symbol}</b> <small>${t.name}</small>
+          <small>${toPct(t.value)}</small>
+        </div>
+      </div>
+      <div class="icons">
+        <a class="icon" href="${t.dexscreener}" target="_blank" rel="noopener" title="Open on Dexscreener">${dexSVG}</a>
+        <a class="icon" href="${t.twitter}"     target="_blank" rel="noopener" title="Open on X">${xSVG}</a>
+      </div>`;
+    list.appendChild(row);
+  });
+
+  // ===== 4) Donut chart (tooltip percent only) =====
+  const ctx = document.getElementById('donut');
+  Chart.register(ChartDataLabels);
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: tokens.map(t => t.symbol),
+      datasets: [{
+        data: tokens.map(t => t.value),
+        backgroundColor: tokens.map(t => t.color),
+        borderWidth: 0,
+        hoverOffset: 6,
+        cutout: '66%',
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display:false },
+        tooltip: {
+          callbacks: {
+            label: c => `${c.label}: ${toPct(c.parsed)}`
+          }
+        },
+        datalabels: {
+          color:'#fff',
+          formatter: (val) => toPct(val),
+          font: { weight: 600, size: 11 },
+          clip: true
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+
+
+</html>
