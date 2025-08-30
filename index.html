@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mich - Specialized AI Agents</title>
 
-  <!-- Tailwind via CDN (biar gampang styling) -->
+  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font lokal (opsional) -->
@@ -17,13 +17,43 @@
     .text-wordmark{font-size:72px; font-weight:600; line-height:1; letter-spacing:-.01em}
     .text-slogan{letter-spacing:.35em; font-size:12px; font-weight:600}
     .glass{background:rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+
+    /* Tambahan untuk background animasi */
+    .bg-stage {
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+      pointer-events: none;
+      background: #0b0b0b;
+    }
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .bg-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(255,255,255,0.22), rgba(255,255,255,0) 45%);
+      mix-blend-mode: overlay;
+      opacity: .18;
+    }
   </style>
 </head>
 <body class="bg-black text-white antialiased">
 
-  <!-- Background -->
-  <div class="fixed inset-0 -z-10">
+  <!-- Background statis (opsional, bisa dihapus kalau mau full animasi saja) -->
+  <div class="fixed inset-0 -z-20">
     <img src="./background.svg" alt="Background" class="w-full h-full object-cover" />
+  </div>
+
+  <!-- Background animasi -->
+  <div class="bg-stage" aria-hidden="true">
+    <canvas id="grid" class="bg-layer"></canvas>
+    <canvas id="dots" class="bg-layer"></canvas>
+    <div class="bg-fade"></div>
   </div>
 
   <main>
@@ -39,16 +69,88 @@
     </section>
 
     <!-- CONTENT -->
+    <!-- ... konten kamu tetap ... -->
+  </main>
+
+  <!-- Script animasi -->
+  <script>
+  (() => {
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const grid = document.getElementById('grid');
+    const dots = document.getElementById('dots');
+    const g = grid.getContext('2d');
+    const d = dots.getContext('2d');
+
+    let W=0, H=0, running=true;
+    const cfg = { grid: { step: 32, color: 'rgba(255,255,255,0.04)' }, dots: { count: 120} };
+
+    function resize() {
+      W = grid.clientWidth;
+      H = grid.clientHeight;
+      for (const cv of [grid, dots]) {
+        cv.width = W * DPR;
+        cv.height = H * DPR;
+        cv.style.width = W + 'px';
+        cv.style.height = H + 'px';
+      }
+      drawGrid();
+    }
+
+    function drawGrid() {
+      g.clearRect(0,0,grid.width,grid.height);
+      g.save(); g.scale(DPR,DPR);
+      const step = cfg.grid.step;
+      g.strokeStyle = cfg.grid.color;
+      for (let x=0; x<W; x+=step) {
+        g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke();
+      }
+      for (let y=0; y<H; y+=step) {
+        g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke();
+      }
+      g.restore();
+    }
+
+    const particles = [];
+    function spawn() {
+      particles.length = 0;
+      for (let i=0; i<cfg.dots.count; i++) {
+        particles.push({x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*2});
+      }
+    }
+
+    function tick() {
+      if (!running) return;
+      d.clearRect(0,0,dots.width,dots.height);
+      d.save(); d.scale(DPR,DPR);
+      d.fillStyle="white";
+      for (const p of particles) {
+        d.beginPath();
+        d.arc(p.x,p.y,p.r,0,Math.PI*2);
+        d.fill();
+        p.y += 0.2; if (p.y>H) p.y=0;
+      }
+      d.restore();
+      requestAnimationFrame(tick);
+    }
+
+    resize();
+    spawn();
+    tick();
+    window.addEventListener('resize', () => { resize(); spawn(); });
+  })();
+  </script>
+
+    <!-- CONTENT -->
     <section id="content" class="section items-center justify-center">
       <div class="w-full max-w-5xl mx-auto px-6">
         <div class="glass rounded-2xl p-6 md:p-8 border border-white/15 shadow-[0_8px_40px_rgba(0,0,0,.35)]">
           <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-zinc-100">
-            Hi, I’m Michael Steven
+            Meet Mich - the Special Agent
           </h2>
           <div class="text-base md:text-lg text-zinc-100/90 space-y-0">
-            <p>✨ Full-time pengangguran, 💼 part-time tukang cuci di Solana Labs</p>
-            <p>Dulu sempat kerja di bank 3+ tahun, sekarang pindah profesi jadi full-time trader (crypto)</p>
-            <p>Beberapa Aplikasi sedang dibuat oleh dev 🔨🔨🔨🔨🔨, Mohon bersabar</p>
+            <p>In this AI cycle, the real alpha isn’t chasing pump & dump narratives - it’s <b>workflow automation</b>. 
+              The next wave of adoption will be driven by <b>specialized agents</b>: AI tools that don’t just look cool, but actually <b>solve real problems</b> for real users.</p>
+            <p>👨🏻‍💻 Devs are cooking a few projects right now - not just random apps 🔨. Stay tuned.</p>
           </div>
         </div>
 
