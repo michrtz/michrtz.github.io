@@ -167,7 +167,8 @@
 <html lang="id">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 <title>Gatcha Ball + Rarity Board</title>
 <style>
   :root{
@@ -177,9 +178,16 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 1200px at 50% -300px,#171824,#090b0f); color:var(--ink)}
   .wrap{max-width:1100px;margin:0 auto;padding:28px 14px}
-  .grid{display:grid;grid-template-columns:1fr 380px;gap:22px}
-  @media(max-width:980px){.grid{grid-template-columns:1fr}}
-  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px}
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 380px;
+  gap:22px;
+}
+@media (max-width: 980px){
+  .grid{ grid-template-columns:minmax(0,1fr); }
+  .card--gatcha{ order:1; }
+  .card--board{ order:2; }
+}
 
   /* ========== Gatcha Ball (kiri) ========== */
   .stage{display:grid;place-items:center;min-height:360px}
@@ -242,27 +250,30 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="grid">
-      <!-- KIRI: Gatcha -->
-      <div class="card">
-        <h2 style="margin:0 0 10px">🎰 Gatcha Machine</h2>
-        <div class="note">Klik <b>OPEN</b>. Bola menyala sesuai <i>rarity</i>, lalu NFT muncul.</div>
-        <div class="stage"><div id="ball" class="ball"></div></div>
-        <div class="controls">
-          <button id="openBtn" class="btn" disabled>OPEN</button>
-          <button id="againBtn" class="ghost" disabled>Main Lagi</button>
-          <span id="status" class="note">Loading assets…</span>
-        </div>
-      </div>
+<div class="wrap">
+  <div class="grid">
+    <!-- KIRI: Gatcha -->
+    <div class="card card--gatcha">
+      <h2 style="margin:0 0 10px">🎰 Gatcha Machine</h2>
+      <div class="note">Klik <b>OPEN</b>. Bola menyala sesuai <i>rarity</i>, lalu NFT muncul.</div>
 
-      <!-- KANAN: Rarity Board -->
-      <div class="card" id="board">
-        <h3>🧩 Rarity Board</h3>
-        <div id="boardBody" style="margin-top:10px"></div>
+      <div class="stage"><div id="ball" class="ball"></div></div>
+
+      <div class="controls">
+        <button id="openBtn" class="btn" disabled>OPEN</button>
+        <button id="againBtn" class="ghost" disabled>Main Lagi</button>
+        <span id="status" class="note">Loading assets…</span>
       </div>
     </div>
+
+    <!-- KANAN: Rarity Board -->
+    <div class="card card--board" id="board">
+      <h3>🧩 Rarity Board</h3>
+      <div class="note">Semua hadiah berupa <b>gambar NFT</b>. Odds mengikuti persentase tiap item.</div>
+      <div id="boardBody" style="margin-top:10px"></div>
+    </div>
   </div>
+</div>
 
   <!-- Modal -->
   <div id="modal" class="backdrop">
@@ -394,5 +405,6 @@ againBtn.addEventListener('click', playAgain);
 </script>
 </body>
 </html>
+
 
 
