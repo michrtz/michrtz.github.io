@@ -165,298 +165,232 @@
 
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Chest Opening — NFT Loot (Dota-2 style)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Gatcha Ball + Rarity Board</title>
 <style>
   :root{
-    --bg:#0b0b10; --panel:#141420; --muted:#9aa3af; --accent:#67e8f9;
+    --bg:#0b0f18; --panel:#12182a; --ink:#e5e7eb; --muted:#9aa3af; --accent:#22d3ee;
     --common:#9ca3af; --uncommon:#34d399; --rare:#60a5fa; --epic:#a78bfa; --legendary:#f59e0b; --secret:#fb7185;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-       background:radial-gradient(1200px 1200px at 50% -300px,#171824,#090a0f); color:#e5e7eb}
-  .wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
-  .board{display:grid;grid-template-columns:1fr 380px;gap:22px}
-  @media(max-width:980px){.board{grid-template-columns:1fr}}
-  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-        border-radius:16px;padding:16px}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 1200px at 50% -300px,#171824,#090b0f); color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 14px}
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:22px}
+  @media(max-width:980px){.grid{grid-template-columns:1fr}}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px}
 
-  /* ===== Reel ===== */
-  .reel-wrap{position:relative;height:280px;border-radius:14px;overflow:hidden;
-             background:linear-gradient(180deg,#0f1421,#0b0f18)}
-  .reel-window{position:absolute;inset:0;display:flex;align-items:center;overflow:hidden}
-  .reel-track{display:flex;gap:12px;will-change:transform}
-  .card-item{
-    width:200px;height:240px;background:rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:8px;
-    display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:flex-start;
-    filter:saturate(.92)
+  /* ========== Gatcha Ball (kiri) ========== */
+  .stage{display:grid;place-items:center;min-height:360px}
+  .ball{
+    width:220px;height:220px;border-radius:999px;position:relative;overflow:hidden;
+    border:1px solid rgba(0,0,0,.35); box-shadow:inset 0 -18px 34px rgba(0,0,0,.38), 0 18px 28px rgba(0,0,0,.35);
+    background:linear-gradient(145deg,#9aa3af,#6b7280); /* neutral */
+    transition:background .35s ease, transform .25s ease, filter .25s ease;
   }
-  .card-item img{width:100%;height:150px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.12)}
-  .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
-  .rar{font-size:12px;opacity:.9}
-  .rar.Common{color:var(--common)} .rar.Uncommon{color:var(--uncommon)} .rar.Rare{color:var(--rare)}
-  .rar.Epic{color:var(--epic)} .rar.Legendary{color:var(--legendary)} .rar.Secret{color:var(--secret)}
-  /* center frame + pointer + fades */
-  .center-pointer{
-    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-    width:210px; pointer-events:none; z-index:5;
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12), 0 0 40px rgba(103,232,249,.12);
-    border-radius:14px;
+  .ball::after{
+    content:""; position:absolute; left:18%; top:18%; width:44%; height:44%; border-radius:999px;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,0) 60%);
+    mix-blend-mode:screen; opacity:.9; pointer-events:none;
   }
-  .pointer-tri{
-    position:absolute; top:8px; left:50%; transform:translateX(-50%);
-    width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:14px solid var(--accent);
-    filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));
-  }
-  .fade-edges::before,.fade-edges::after{
-    content:""; position:absolute; top:0; bottom:0; width:140px; z-index:4; pointer-events:none;
-  }
-  .fade-edges::before{left:0;background:linear-gradient(90deg,#0b0f18,transparent)}
-  .fade-edges::after{right:0;background:linear-gradient(270deg,#0b0f18,transparent)}
+  .ball.common   { background:linear-gradient(145deg,#c9d2dc,#8f9baa) }
+  .ball.uncommon { background:linear-gradient(145deg,#7ce9c4,#10b981) }
+  .ball.rare     { background:linear-gradient(145deg,#d0e1ff,#3b82f6) }
+  .ball.epic     { background:linear-gradient(145deg,#d9ccff,#8b5cf6) }
+  .ball.legendary{ background:linear-gradient(145deg,#ffe08a,#f59e0b) }
+  .ball.secret   { background:linear-gradient(145deg,#ffb3b3,#ef4444) }
 
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  button{background:linear-gradient(180deg,#16b8ff,#0ea5e9);border:none;color:#fff;padding:10px 16px;
-         border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,.35)}
-  button[disabled]{opacity:.6;cursor:not-allowed}
+  .ball.animating{ animation: pulseGlow var(--dur,2200ms) ease-in-out forwards; }
+  @keyframes pulseGlow{
+    0%   { transform: translateY(0) scale(1);    filter: drop-shadow(0 0 0 rgba(34,211,238,0)); }
+    20%  { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 18px rgba(34,211,238,.35)); }
+    40%  { transform: translateY(0) scale(1.02); filter: drop-shadow(0 0 10px rgba(34,211,238,.25)); }
+    60%  { transform: translateY(-6px) scale(1.06); filter: drop-shadow(0 0 22px rgba(34,211,238,.45)); }
+    80%  { transform: translateY(0) scale(1.03); filter: drop-shadow(0 0 14px rgba(34,211,238,.35)); }
+    100% { transform: translateY(0) scale(1);    filter: drop-shadow(0 0 0 rgba(34,211,238,0)); }
+  }
 
-  /* ===== Rarity Board ===== */
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  .btn{background:linear-gradient(180deg,#16b8ff,#0ea5e9);border:none;color:#fff;padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer;
+       box-shadow:0 6px 20px rgba(14,165,233,.35)}
+  .btn[disabled]{opacity:.6;cursor:not-allowed}
+  .ghost{background:#1f2937;border:none;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700}
+  .note{font-size:12px;color:var(--muted)}
+
+  /* ========== Rarity Board (kanan) ========== */
   h3{margin:0 0 10px}
-  .tier{margin-bottom:14px;padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:#0f1420}
+  .tier{padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#0f1420;margin-bottom:12px}
   .tier-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .tag{font-weight:700;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);font-size:12px}
-  .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden}
+  .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.2);font-weight:700;font-size:12px}
+  .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:8px}
   .bar>span{display:block;height:100%;background:linear-gradient(90deg,#34d399,#a7f3d0)}
-  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
-  .item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.03);
-        border:1px solid rgba(255,255,255,.06)}
-  .item img{width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.12)}
-  .item .meta{flex:1;min-width:0}
-  .item .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .pct{font-weight:700;color:#a7f3d0}
-  .note{font-size:12px;color:#9aa3af;margin-top:8px}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+  .thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
+  .meta{flex:1;min-width:0}
+  .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pct{font-weight:700;color:#a7f3d0}
 
-  /* ===== Modal ===== */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
-    align-items:center;justify-content:center;padding:20px;z-index:30}
-  .modal{background:linear-gradient(180deg,#0f172a,#0b0f1a);border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;max-width:560px;width:100%;padding:22px;text-align:center}
-  .modal h2{margin:0 0 6px;font-size:26px}
-  .prize-img{width:260px;height:260px;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.12);
-    margin:10px auto}
-  .prize-name{font-size:22px;font-weight:800;margin-top:6px}
-  .modal .close{margin-top:14px;background:#374151}
-  .show{display:flex}
+  /* Modal */
+  .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+  .backdrop.show{display:flex}
+  .modal{background:linear-gradient(180deg,#0f172a,#0b0f1a);border:1px solid rgba(255,255,255,.08);border-radius:18px;
+         width:min(560px,96vw);padding:20px;text-align:center}
+  .modal h2{margin:0 0 6px}
+  .prize{width:280px;height:280px;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.12);display:block;margin:12px auto}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="board">
-      <!-- LEFT: Reel -->
+    <div class="grid">
+      <!-- KIRI: Gatcha -->
       <div class="card">
-        <div class="reel-wrap fade-edges">
-          <div class="pointer-tri"></div>
-          <div class="center-pointer"></div>
-          <div class="reel-window">
-            <div id="track" class="reel-track"></div>
-          </div>
-        </div>
+        <h2 style="margin:0 0 10px">🎰 Gatcha Machine</h2>
+        <div class="note">Klik <b>OPEN</b>. Bola menyala sesuai <i>rarity</i>, lalu NFT muncul.</div>
+        <div class="stage"><div id="ball" class="ball"></div></div>
         <div class="controls">
-          <button id="openBtn">OPEN</button>
+          <button id="openBtn" class="btn" disabled>OPEN</button>
+          <button id="againBtn" class="ghost" disabled>Main Lagi</button>
+          <span id="status" class="note">Loading assets…</span>
         </div>
       </div>
 
-      <!-- RIGHT: Rarity Board -->
-      <div class="card" id="rarityBoard">
+      <!-- KANAN: Rarity Board -->
+      <div class="card" id="board">
         <h3>🧩 Rarity Board</h3>
-        <div class="note">Semua hadiah berupa <b>gambar NFT</b>. Odds mengikuti persentase tiap item.</div>
+        <div id="boardBody" style="margin-top:10px"></div>
       </div>
     </div>
   </div>
 
   <!-- Modal -->
-  <div class="modal-backdrop" id="modal">
+  <div id="modal" class="backdrop">
     <div class="modal">
       <h2>🎉 Selamat!</h2>
-      <p>Kamu mendapatkan:</p>
-      <img id="prizeImg" class="prize-img" src="" alt="NFT Prize">
-      <div class="prize-name" id="prizeText">—</div>
-      <p id="prizeDetail" class="note"></p>
-      <button class="close" id="closeModal">Tutup</button>
+      <p class="note">Kamu mendapatkan:</p>
+      <img id="prizeImg" class="prize" src="" alt="">
+      <div id="prizeName" style="font-weight:800;font-size:20px;margin-top:6px">—</div>
+      <div id="prizeMeta" class="note">—</div>
+      <button id="closeModal" class="ghost">Tutup</button>
     </div>
   </div>
 
 <script>
-/* =======================
-   KONFIG: NFT + rarity + % (total 100)
-   Ganti URL img sesuai koleksi kamu
-======================= */
+/* ======= DATA (total 100%) ======= */
 const items = [
-  { label:"Shiba #001",  rarity:"Common",    percent:73, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Shiba #014",  rarity:"Common",    percent:10, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Neko #077",   rarity:"Uncommon",  percent:5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Neko #105",   rarity:"Uncommon",  percent:5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Ape #12",     rarity:"Rare",      percent:2.5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Ape #29",     rarity:"Rare",      percent:2.5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"Dragon #7",   rarity:"Epic",      percent:1,  img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"M #1",    rarity:"Secret",    percent:0.2,  img:"https://i.imghippo.com/files/OU1598an.png" },
-  { label:"M #2",     rarity:"Secret",      percent:0.2, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
-  { label:"M #3",     rarity:"Secret",      percent:0.2, img:"https://i.imghippo.com/files/gdnc6227sY.png" },
-  { label:"M #4",   rarity:"Secret",      percent:0.2,  img:"https://i.imghippo.com/files/VJUC3631FyQ.png" },
-  { label:"M #5",    rarity:"Secret",    percent:0.2,  img:"https://i.imghippo.com/files/PmBs6199Mw.png" }
+  { label:"M1",  rarity:"Common",    percent:10,  img:"https://i.imghippo.com/files/TSbB1517Qyo.png" },
+  { label:"M2",  rarity:"Common",    percent:10,  img:"https://i.imghippo.com/files/FlI3186bnY.png" },
+  { label:"M3",   rarity:"Common",  percent:10,   img:"https://i.imghippo.com/files/BlrZ4239QF.png" },
+  { label:"M4",   rarity:"Common",  percent:10,   img:"https://i.imghippo.com/files/syo6498SFA.png" },
+  { label:"M5",  rarity:"Uncommon",    percent:7,  img:"https://i.imghippo.com/files/TSbB1517Qyo.png" },
+  { label:"M6",  rarity:"Uncommon",    percent:7,  img:"https://i.imghippo.com/files/LBJ5222KaA.png" },
+  { label:"M7",   rarity:"Uncommon",  percent:7,   img:"https://i.imghippo.com/files/dyI7023qyY.png" },
+  { label:"M8",   rarity:"Uncommon",  percent:7,   img:"https://i.imghippo.com/files/eiaw1437QQ.png" },
+  { label:"M9",     rarity:"Rare",      percent:5, img:"https://i.imghippo.com/files/jiGE5024Kps.png" },
+  { label:"M10",     rarity:"Rare",      percent:5, img:"https://i.imghippo.com/files/OOSV6802mZE.png" },
+  { label:"M11",   rarity:"Rare",      percent:5,   img:"https://i.imghippo.com/files/NTK4959Xuc.png" },
+  { label:"M12",   rarity:"Rare",      percent:5,   img:"https://i.imghippo.com/files/Xt6687XI.png" },
+  { label:"M13",     rarity:"Epic",      percent:3, img:"https://i.imghippo.com/files/TPH4745Khc.png" },
+  { label:"M14",     rarity:"Epic",      percent:3, img:"https://i.imghippo.com/files/KQlX5675rI.png" },
+  { label:"M15",     rarity:"Legendary",      percent:0.5, img:"https://i.imghippo.com/files/OOSV6802mZE.png" },
+  { label:"M16",        rarity:"Legendary",    percent:0.5, img:"https://i.imghippo.com/files/gdnc6227sY.png" },
+  { label:"M17",        rarity:"Secret",    percent:0.1, img:"https://i.imghippo.com/files/XSB5260Ol.png" }
 ];
 
+/* ======= Pengaturan animasi ======= */
+const DURATION_MS = 3200; // ubah jika ingin lebih cepat/lambat
 
-/* ===== util ===== */
-const rarityColor = r => ({
-  Common:'var(--common)',Uncommon:'var(--uncommon)',Rare:'var(--rare)',
-  Epic:'var(--epic)',Legendary:'var(--legendary)',Secret:'var(--secret)'
-})[r] || 'var(--common)';
+/* ======= Helpers ======= */
+const rClass = r => ({Common:'common',Uncommon:'uncommon',Rare:'rare',Epic:'epic',Legendary:'legendary',Secret:'secret'})[r]||'common';
+const rarityVar = r => ({Common:'--common',Uncommon:'--uncommon',Rare:'--rare',Epic:'--epic',Legendary:'--legendary',Secret:'--secret'})[r]||'--common';
+function pickWeighted(arr){ let r=Math.random()*100, a=0; for(const it of arr){ a+=Number(it.percent)||0; if(r<a) return it; } return arr.at(-1); }
+const preloadAll = arr => Promise.all(arr.map(i=>new Promise(res=>{const im=new Image(); im.onload=im.onerror=res; im.src=i.img;})));
 
-/* ===== DOM ===== */
-const track = document.getElementById('track');
+/* ======= DOM ======= */
+const ball = document.getElementById('ball');
 const openBtn = document.getElementById('openBtn');
-const modalEl = document.getElementById('modal');
-const prizeText = document.getElementById('prizeText');
-const prizeDetail = document.getElementById('prizeDetail');
+const againBtn = document.getElementById('againBtn');
+const statusEl = document.getElementById('status');
+const modal = document.getElementById('modal');
 const prizeImg = document.getElementById('prizeImg');
-const closeModal = document.getElementById('closeModal');
-const rarityBoard = document.getElementById('rarityBoard');
+const prizeName = document.getElementById('prizeName');
+const prizeMeta = document.getElementById('prizeMeta');
+document.getElementById('closeModal').addEventListener('click', ()=>modal.classList.remove('show'));
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('show'); });
 
-/* ===== kartu reel ===== */
-function cardTemplate(it){
-  const wrap = document.createElement('div');
-  wrap.className = 'card-item';
-  wrap.innerHTML = `
-    <img src="${it.img}" alt="${it.label}">
-    <div class="name">${it.label}</div>
-    <div class="rar" style="color:${rarityColor(it.rarity)}">${it.rarity}</div>
-  `;
-  return wrap;
+/* ======= State ======= */
+let lockedPrize = null, busy = false;
+
+/* ======= Init ======= */
+(async function init(){
+  await preloadAll(items);
+  statusEl.textContent = 'Siap! Klik OPEN.';
+  openBtn.disabled = false;
+  renderBoard();
+})();
+
+/* ======= OPEN flow ======= */
+function resetBall(){ ball.className='ball'; ball.style.setProperty('--dur', DURATION_MS+'ms'); }
+function openGatcha(){
+  if(busy) return;
+  busy=true; openBtn.disabled=true; againBtn.disabled=true;
+
+  lockedPrize = pickWeighted(items);        // lock hasil
+  resetBall();
+  ball.classList.add(rClass(lockedPrize.rarity));
+  setTimeout(()=> ball.classList.add('animating'), 60);
+
+  setTimeout(()=>{
+    ball.classList.remove('animating');
+    showPrize();
+    busy=false; againBtn.disabled=false;
+  }, DURATION_MS+80);
 }
-
-/* ===== Build reel track panjang (clones) ===== */
-let unitWidth = 50; // perkiraan (kartu + gap)
-function buildTrack(){
-  track.innerHTML='';
-  const base = items.map(cardTemplate);
-  const clones = [];
-  for(let i=0;i<5;i++) base.forEach(n=>clones.push(n.cloneNode(true)));
-  clones.forEach(n=>track.appendChild(n));
-  // ukur lebar kartu sebenarnya
-  const first = track.children[0];
-  if(first) unitWidth = first.getBoundingClientRect().width + 12;
+function showPrize(){
+  prizeImg.src = lockedPrize.img;
+  prizeName.textContent = lockedPrize.label;
+  prizeMeta.textContent = `${lockedPrize.rarity} • ${lockedPrize.percent}%`;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(rarityVar(lockedPrize.rarity)).trim();
+  prizeMeta.style.color = v || '#cbd5e1';
+  modal.classList.add('show');
 }
-buildTrack();
+function playAgain(){ modal.classList.remove('show'); resetBall(); openBtn.disabled=false; }
 
-/* ===== Weighted pick ===== */
-function pickWeighted(){
-  let r = Math.random()*100, acc = 0;
-  for(const it of items){ acc+=it.percent; if(r<acc) return it; }
-  return items.at(-1);
-}
-
-/* ===== Animation ===== */
-let opening = false, currentX = 0;
-function openChest(){
-  if(opening) return;
-  opening = true; openBtn.disabled = true;
-
-  const winner = pickWeighted();
-
-  // pilih occurrence winner di pengulangan ke-3/4 agar jarak cukup
-  const occurIndex = (() => {
-    const bases = items.map(i=>i.label);
-    const idx = bases.indexOf(winner.label);
-    return idx + items.length * (3 + Math.floor(Math.random()*2)); // 3 atau 4
-  })();
-
-  const windowCenter = (document.querySelector('.reel-wrap').clientWidth) / 2;
-  const targetCenterX = occurIndex * unitWidth + unitWidth/2;
-  const targetTranslate = -(targetCenterX - windowCenter);
-
-  const start = performance.now();
-  const startX = currentX;
-  // ekstra jarak untuk sensasi “run-up”
-  const extra = -(unitWidth * (items.length*2 + Math.floor(Math.random()*6)));
-  const endX = targetTranslate + extra;
-  const duration = 4600 + Math.random()*900;
-
-  const easeOutCubic = t => 1 - Math.pow(1-t,3);
-
-  function frame(now){
-    const t = Math.min(1, (now - start)/duration);
-    const e = easeOutCubic(t);
-    currentX = startX + (endX - startX) * e;
-    track.style.transform = `translateX(${currentX}px)`;
-    if(t<1){ requestAnimationFrame(frame); }
-    else {
-      // align final tepat di tengah
-      currentX = targetTranslate;
-      track.style.transform = `translateX(${currentX}px)`;
-      setTimeout(()=>showPrize(winner), 260);
-      openBtn.disabled = false; opening = false;
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
-/* ===== Modal ===== */
-function showPrize(it){
-  prizeText.textContent = it.label;
-  prizeDetail.textContent = `${it.rarity} • ${it.percent}%`;
-  prizeDetail.style.color = getComputedStyle(document.documentElement)
-    .getPropertyValue(rarityColor(it.rarity).replace('var(','').replace(')','')) || '#cbd5e1';
-  prizeImg.src = it.img;
-  modalEl.classList.add('show');
-}
-function hidePrize(){ modalEl.classList.remove('show'); }
-
-/* ===== Rarity Board ===== */
-function groupByTier(){
-  const map = new Map();
-  items.forEach(s=>{
-    if(!map.has(s.rarity)) map.set(s.rarity, []);
-    map.get(s.rarity).push(s);
-  });
+/* ======= Rarity Board (kanan) ======= */
+const boardBody = document.getElementById('boardBody');
+function renderBoard(){
+  const byTier = items.reduce((m,i)=>{(m[i.rarity]=m[i.rarity]||[]).push(i); return m;},{});
   const order = ["Common","Uncommon","Rare","Epic","Legendary","Secret"];
-  return Array.from(map.entries()).sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]));
-}
-function renderRarityBoard(){
-  rarityBoard.querySelectorAll('.tier').forEach(n=>n.remove());
-  const groups = groupByTier();
-  groups.forEach(([tier, arr])=>{
-    const pct = arr.reduce((s,i)=>s+i.percent,0);
-    const el = document.createElement('div'); el.className='tier';
-    el.innerHTML = `
+  boardBody.innerHTML = order.map(t=>{
+    const arr = byTier[t]||[];
+    const total = arr.reduce((s,i)=>s+i.percent,0);
+    return `
+    <div class="tier">
       <div class="tier-head">
-        <span class="tag" style="border-color:${rarityColor(tier)}; color:${rarityColor(tier)}">${tier}</span>
-        <span><b>${pct}%</b> total</span>
+        <span class="chip" style="border-color:rgba(255,255,255,.25);color:var(${rarityVar(t)})">${t}</span>
+        <span><b>${total}%</b> total</span>
       </div>
-      <div class="bar"><span style="width:${pct}%"></span></div>
+      <div class="bar"><span style="width:${total}%"></span></div>
       <div class="grid">
         ${arr.map(it=>`
           <div class="item">
-            <img src="${it.img}" alt="${it.label}">
+            <img class="thumb" src="${it.img}" alt="${it.label}">
             <div class="meta">
               <b>${it.label}</b>
-              <span style="font-size:12px;color:${rarityColor(it.rarity)}">${it.rarity}</span>
+              <span class="note" style="color:var(${rarityVar(it.rarity)})">${it.rarity}</span>
             </div>
             <div class="pct">${it.percent}%</div>
           </div>
         `).join("")}
       </div>
-    `;
-    rarityBoard.appendChild(el);
-  });
+    </div>`;
+  }).join("");
 }
-renderRarityBoard();
 
-/* ===== Events ===== */
-openBtn.addEventListener('click', openChest);
-closeModal.addEventListener('click', hidePrize);
-modalEl.addEventListener('click',(e)=>{ if(e.target===modalEl) hidePrize(); });
+/* ======= Events ======= */
+openBtn.addEventListener('click', openGatcha);
+againBtn.addEventListener('click', playAgain);
 </script>
 </body>
 </html>
+
