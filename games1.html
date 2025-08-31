@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="https://i.imghippo.com/files/A2273ss.png"
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mich - Specialized AI Agents</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font lokal (opsional) -->
+  <link rel="stylesheet" href="./fonts/stylesheet.css" />
+
+  <style>
+    html,body{height:100%}
+    .section{min-height:50vh; display:flex}
+    .text-wordmark{font-size:72px; font-weight:600; line-height:1; letter-spacing:-.01em}
+    .text-slogan{letter-spacing:.35em; font-size:12px; font-weight:600}
+    .glass{background:rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+
+    /* Tambahan untuk background animasi */
+    .bg-stage {
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+      pointer-events: none;
+      background: #0b0b0b;
+    }
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .bg-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(255,255,255,0.22), rgba(255,255,255,0) 45%);
+      mix-blend-mode: overlay;
+      opacity: .18;
+    }
+  </style>
+</head>
+
+<a href="index.html" class="back-btn">← Back</a>
+
+<style>
+.back-btn{
+  position: absolute;       /* selalu di layar */
+  top: 150px;
+  right: 20px;           /* pojok kanan atas */
+  z-index: 50;           /* di atas konten */
+  padding: 10px 50px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  color: #fff; text-decoration: none; font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+.back-btn:hover{ background: rgba(255,255,255,.22); }
+</style>
+
+
+
+<body class="bg-black text-white antialiased">
+
+  <!-- Background statis (opsional, bisa dihapus kalau mau full animasi saja) -->
+  <div class="fixed inset-0 -z-20">
+    <img src="./background.svg" alt="Background" class="w-full h-full object-cover" />
+  </div>
+
+  <!-- Background animasi -->
+  <div class="bg-stage" aria-hidden="true">
+    <canvas id="grid" class="bg-layer"></canvas>
+    <canvas id="dots" class="bg-layer"></canvas>
+    <div class="bg-fade"></div>
+  </div>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="relative py-16 md:py-12 flex items-center justify-center">
+      <div class="flex items-end justify-center gap-4">
+        <h1 class="text-wordmark">MICH</h1>
+        <div class="text-slogan flex flex-col">
+          <div>USEFUL</div>
+          <div>AGENTS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <!-- ... konten kamu tetap ... -->
+  </main>
+
+  <!-- Script animasi -->
+  <script>
+  (() => {
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const grid = document.getElementById('grid');
+    const dots = document.getElementById('dots');
+    const g = grid.getContext('2d');
+    const d = dots.getContext('2d');
+
+    let W=0, H=0, running=true;
+    const cfg = { grid: { step: 32, color: 'rgba(255,255,255,0.04)' }, dots: { count: 120} };
+
+    function resize() {
+      W = grid.clientWidth;
+      H = grid.clientHeight;
+      for (const cv of [grid, dots]) {
+        cv.width = W * DPR;
+        cv.height = H * DPR;
+        cv.style.width = W + 'px';
+        cv.style.height = H + 'px';
+      }
+      drawGrid();
+    }
+
+    function drawGrid() {
+      g.clearRect(0,0,grid.width,grid.height);
+      g.save(); g.scale(DPR,DPR);
+      const step = cfg.grid.step;
+      g.strokeStyle = cfg.grid.color;
+      for (let x=0; x<W; x+=step) {
+        g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke();
+      }
+      for (let y=0; y<H; y+=step) {
+        g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke();
+      }
+      g.restore();
+    }
+
+    const particles = [];
+    function spawn() {
+      particles.length = 0;
+      for (let i=0; i<cfg.dots.count; i++) {
+        particles.push({x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*2});
+      }
+    }
+
+    function tick() {
+      if (!running) return;
+      d.clearRect(0,0,dots.width,dots.height);
+      d.save(); d.scale(DPR,DPR);
+      d.fillStyle="white";
+      for (const p of particles) {
+        d.beginPath();
+        d.arc(p.x,p.y,p.r,0,Math.PI*2);
+        d.fill();
+        p.y += 0.2; if (p.y>H) p.y=0;
+      }
+      d.restore();
+      requestAnimationFrame(tick);
+    }
+
+    resize();
+    spawn();
+    tick();
+    window.addEventListener('resize', () => { resize(); spawn(); });
+  })();
+  </script>
+<html lang="en">
+
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chest Opening — NFT Loot (Dota-2 style)</title>
+<style>
+  :root{
+    --bg:#0b0b10; --panel:#141420; --muted:#9aa3af; --accent:#67e8f9;
+    --common:#9ca3af; --uncommon:#34d399; --rare:#60a5fa; --epic:#a78bfa; --legendary:#f59e0b; --secret:#fb7185;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+       background:radial-gradient(1200px 1200px at 50% -300px,#171824,#090a0f); color:#e5e7eb}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
+  .board{display:grid;grid-template-columns:1fr 380px;gap:22px}
+  @media(max-width:980px){.board{grid-template-columns:1fr}}
+  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+        border-radius:16px;padding:16px}
+
+  /* ===== Reel ===== */
+  .reel-wrap{position:relative;height:280px;border-radius:14px;overflow:hidden;
+             background:linear-gradient(180deg,#0f1421,#0b0f18)}
+  .reel-window{position:absolute;inset:0;display:flex;align-items:center;overflow:hidden}
+  .reel-track{display:flex;gap:12px;will-change:transform}
+  .card-item{
+    width:200px;height:240px;background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:8px;
+    display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:flex-start;
+    filter:saturate(.92)
+  }
+  .card-item img{width:100%;height:150px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.12)}
+  .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
+  .rar{font-size:12px;opacity:.9}
+  .rar.Common{color:var(--common)} .rar.Uncommon{color:var(--uncommon)} .rar.Rare{color:var(--rare)}
+  .rar.Epic{color:var(--epic)} .rar.Legendary{color:var(--legendary)} .rar.Secret{color:var(--secret)}
+  /* center frame + pointer + fades */
+  .center-pointer{
+    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+    width:210px; pointer-events:none; z-index:5;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12), 0 0 40px rgba(103,232,249,.12);
+    border-radius:14px;
+  }
+  .pointer-tri{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:14px solid var(--accent);
+    filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));
+  }
+  .fade-edges::before,.fade-edges::after{
+    content:""; position:absolute; top:0; bottom:0; width:140px; z-index:4; pointer-events:none;
+  }
+  .fade-edges::before{left:0;background:linear-gradient(90deg,#0b0f18,transparent)}
+  .fade-edges::after{right:0;background:linear-gradient(270deg,#0b0f18,transparent)}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{background:linear-gradient(180deg,#16b8ff,#0ea5e9);border:none;color:#fff;padding:10px 16px;
+         border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,.35)}
+  button[disabled]{opacity:.6;cursor:not-allowed}
+
+  /* ===== Rarity Board ===== */
+  h3{margin:0 0 10px}
+  .tier{margin-bottom:14px;padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:#0f1420}
+  .tier-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .tag{font-weight:700;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);font-size:12px}
+  .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden}
+  .bar>span{display:block;height:100%;background:linear-gradient(90deg,#34d399,#a7f3d0)}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+  .item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.03);
+        border:1px solid rgba(255,255,255,.06)}
+  .item img{width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.12)}
+  .item .meta{flex:1;min-width:0}
+  .item .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .pct{font-weight:700;color:#a7f3d0}
+  .note{font-size:12px;color:#9aa3af;margin-top:8px}
+
+  /* ===== Modal ===== */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
+    align-items:center;justify-content:center;padding:20px;z-index:30}
+  .modal{background:linear-gradient(180deg,#0f172a,#0b0f1a);border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;max-width:560px;width:100%;padding:22px;text-align:center}
+  .modal h2{margin:0 0 6px;font-size:26px}
+  .prize-img{width:260px;height:260px;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.12);
+    margin:10px auto}
+  .prize-name{font-size:22px;font-weight:800;margin-top:6px}
+  .modal .close{margin-top:14px;background:#374151}
+  .show{display:flex}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="board">
+      <!-- LEFT: Reel -->
+      <div class="card">
+        <div class="reel-wrap fade-edges">
+          <div class="pointer-tri"></div>
+          <div class="center-pointer"></div>
+          <div class="reel-window">
+            <div id="track" class="reel-track"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="openBtn">OPEN</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Rarity Board -->
+      <div class="card" id="rarityBoard">
+        <h3>🧩 Rarity Board</h3>
+        <div class="note">Semua hadiah berupa <b>gambar NFT</b>. Odds mengikuti persentase tiap item.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <h2>🎉 Selamat!</h2>
+      <p>Kamu mendapatkan:</p>
+      <img id="prizeImg" class="prize-img" src="" alt="NFT Prize">
+      <div class="prize-name" id="prizeText">—</div>
+      <p id="prizeDetail" class="note"></p>
+      <button class="close" id="closeModal">Tutup</button>
+    </div>
+  </div>
+
+<script>
+/* =======================
+   KONFIG: NFT + rarity + % (total 100)
+   Ganti URL img sesuai koleksi kamu
+======================= */
+const items = [
+  { label:"Shiba #001",  rarity:"Common",    percent:73, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Shiba #014",  rarity:"Common",    percent:10, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Neko #077",   rarity:"Uncommon",  percent:5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Neko #105",   rarity:"Uncommon",  percent:5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Ape #12",     rarity:"Rare",      percent:2.5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Ape #29",     rarity:"Rare",      percent:2.5, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"Dragon #7",   rarity:"Epic",      percent:1,  img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"M #1",    rarity:"Secret",    percent:0.2,  img:"https://i.imghippo.com/files/OU1598an.png" },
+  { label:"M #2",     rarity:"Secret",      percent:0.2, img:"https://i.imghippo.com/files/kNq5117bLQ.png" },
+  { label:"M #3",     rarity:"Secret",      percent:0.2, img:"https://i.imghippo.com/files/gdnc6227sY.png" },
+  { label:"M #4",   rarity:"Secret",      percent:0.2,  img:"https://i.imghippo.com/files/VJUC3631FyQ.png" },
+  { label:"M #5",    rarity:"Secret",    percent:0.2,  img:"https://i.imghippo.com/files/PmBs6199Mw.png" }
+];
+
+
+/* ===== util ===== */
+const rarityColor = r => ({
+  Common:'var(--common)',Uncommon:'var(--uncommon)',Rare:'var(--rare)',
+  Epic:'var(--epic)',Legendary:'var(--legendary)',Secret:'var(--secret)'
+})[r] || 'var(--common)';
+
+/* ===== DOM ===== */
+const track = document.getElementById('track');
+const openBtn = document.getElementById('openBtn');
+const modalEl = document.getElementById('modal');
+const prizeText = document.getElementById('prizeText');
+const prizeDetail = document.getElementById('prizeDetail');
+const prizeImg = document.getElementById('prizeImg');
+const closeModal = document.getElementById('closeModal');
+const rarityBoard = document.getElementById('rarityBoard');
+
+/* ===== kartu reel ===== */
+function cardTemplate(it){
+  const wrap = document.createElement('div');
+  wrap.className = 'card-item';
+  wrap.innerHTML = `
+    <img src="${it.img}" alt="${it.label}">
+    <div class="name">${it.label}</div>
+    <div class="rar" style="color:${rarityColor(it.rarity)}">${it.rarity}</div>
+  `;
+  return wrap;
+}
+
+/* ===== Build reel track panjang (clones) ===== */
+let unitWidth = 50; // perkiraan (kartu + gap)
+function buildTrack(){
+  track.innerHTML='';
+  const base = items.map(cardTemplate);
+  const clones = [];
+  for(let i=0;i<5;i++) base.forEach(n=>clones.push(n.cloneNode(true)));
+  clones.forEach(n=>track.appendChild(n));
+  // ukur lebar kartu sebenarnya
+  const first = track.children[0];
+  if(first) unitWidth = first.getBoundingClientRect().width + 12;
+}
+buildTrack();
+
+/* ===== Weighted pick ===== */
+function pickWeighted(){
+  let r = Math.random()*100, acc = 0;
+  for(const it of items){ acc+=it.percent; if(r<acc) return it; }
+  return items.at(-1);
+}
+
+/* ===== Animation ===== */
+let opening = false, currentX = 0;
+function openChest(){
+  if(opening) return;
+  opening = true; openBtn.disabled = true;
+
+  const winner = pickWeighted();
+
+  // pilih occurrence winner di pengulangan ke-3/4 agar jarak cukup
+  const occurIndex = (() => {
+    const bases = items.map(i=>i.label);
+    const idx = bases.indexOf(winner.label);
+    return idx + items.length * (3 + Math.floor(Math.random()*2)); // 3 atau 4
+  })();
+
+  const windowCenter = (document.querySelector('.reel-wrap').clientWidth) / 2;
+  const targetCenterX = occurIndex * unitWidth + unitWidth/2;
+  const targetTranslate = -(targetCenterX - windowCenter);
+
+  const start = performance.now();
+  const startX = currentX;
+  // ekstra jarak untuk sensasi “run-up”
+  const extra = -(unitWidth * (items.length*2 + Math.floor(Math.random()*6)));
+  const endX = targetTranslate + extra;
+  const duration = 4600 + Math.random()*900;
+
+  const easeOutCubic = t => 1 - Math.pow(1-t,3);
+
+  function frame(now){
+    const t = Math.min(1, (now - start)/duration);
+    const e = easeOutCubic(t);
+    currentX = startX + (endX - startX) * e;
+    track.style.transform = `translateX(${currentX}px)`;
+    if(t<1){ requestAnimationFrame(frame); }
+    else {
+      // align final tepat di tengah
+      currentX = targetTranslate;
+      track.style.transform = `translateX(${currentX}px)`;
+      setTimeout(()=>showPrize(winner), 260);
+      openBtn.disabled = false; opening = false;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ===== Modal ===== */
+function showPrize(it){
+  prizeText.textContent = it.label;
+  prizeDetail.textContent = `${it.rarity} • ${it.percent}%`;
+  prizeDetail.style.color = getComputedStyle(document.documentElement)
+    .getPropertyValue(rarityColor(it.rarity).replace('var(','').replace(')','')) || '#cbd5e1';
+  prizeImg.src = it.img;
+  modalEl.classList.add('show');
+}
+function hidePrize(){ modalEl.classList.remove('show'); }
+
+/* ===== Rarity Board ===== */
+function groupByTier(){
+  const map = new Map();
+  items.forEach(s=>{
+    if(!map.has(s.rarity)) map.set(s.rarity, []);
+    map.get(s.rarity).push(s);
+  });
+  const order = ["Common","Uncommon","Rare","Epic","Legendary","Secret"];
+  return Array.from(map.entries()).sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]));
+}
+function renderRarityBoard(){
+  rarityBoard.querySelectorAll('.tier').forEach(n=>n.remove());
+  const groups = groupByTier();
+  groups.forEach(([tier, arr])=>{
+    const pct = arr.reduce((s,i)=>s+i.percent,0);
+    const el = document.createElement('div'); el.className='tier';
+    el.innerHTML = `
+      <div class="tier-head">
+        <span class="tag" style="border-color:${rarityColor(tier)}; color:${rarityColor(tier)}">${tier}</span>
+        <span><b>${pct}%</b> total</span>
+      </div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+      <div class="grid">
+        ${arr.map(it=>`
+          <div class="item">
+            <img src="${it.img}" alt="${it.label}">
+            <div class="meta">
+              <b>${it.label}</b>
+              <span style="font-size:12px;color:${rarityColor(it.rarity)}">${it.rarity}</span>
+            </div>
+            <div class="pct">${it.percent}%</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    rarityBoard.appendChild(el);
+  });
+}
+renderRarityBoard();
+
+/* ===== Events ===== */
+openBtn.addEventListener('click', openChest);
+closeModal.addEventListener('click', hidePrize);
+modalEl.addEventListener('click',(e)=>{ if(e.target===modalEl) hidePrize(); });
+</script>
+</body>
+</html>
