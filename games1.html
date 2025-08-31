@@ -233,7 +233,18 @@
   .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.2);font-weight:700;font-size:12px}
   .bar{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:8px}
   .bar>span{display:block;height:100%;background:linear-gradient(90deg,#34d399,#a7f3d0)}
-  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* Grid khusus di dalam Rarity Board saja */
+#board .grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+
+/* Di HP, daftar item Rarity Board jadi 1 kolom */
+@media (max-width: 520px){
+  #board .grid{ grid-template-columns: 1fr; }
+}
+
   .item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
   .thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
   .meta{flex:1;min-width:0}
@@ -405,6 +416,3 @@ againBtn.addEventListener('click', playAgain);
 </script>
 </body>
 </html>
-
-
-
